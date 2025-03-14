@@ -184,7 +184,13 @@ penguins |>
 Starting with penguins, create a summary table containing the maximum and minimum length of flippers (call the columns flip_max and flip_min) for just Chinstrap penguins, grouped by island. (Hint - remember `filter()`)
 
 ```{r}
-
+#| label: min-max-flipper-length
+#table for the minimum and maximum flipper length for Chinstrap
+penguins |> 
+  filter(species == "Chinstrap") |> 
+  group_by(island) |> 
+  mutate(flip_min = min(flipper_length_mm),
+         flip_max = max(flipper_length_mm))
 ```
 
 
@@ -197,6 +203,14 @@ Starting with penguins, in a piped sequence:
 - Create a summary table containing the mean of the bill_ratio variable, by species (name the column in the summary table bill_ratio_mean)  
 
 ```{r}
+#| label: bill-ratio-table
+#summary table for mean bill ratio by species
+penguins |> 
+  mutate(bill_ratio = bill_length_mm/bill_depth_mm) |> 
+  select(species, bill_ratio) |> 
+  group_by(species) |> 
+  filter(complete.cases(bill_ratio)) |> #https://stackoverflow.com/a/75847863 
+  summarize(bill_ratio_mean = mean(bill_ratio)) 
 
 ```
 

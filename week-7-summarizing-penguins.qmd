@@ -1,6 +1,6 @@
 ---
 title: "Summarizing Penguins"
-author: "Your Name (and Parner)"
+author: "Sam Minard"
 format: gfm
 execute: 
   echo: true
@@ -78,36 +78,65 @@ penguins |>
 
 Create new variable called `bill_ratio` that is the ratio of length to depth (length/depth)
 
-```{r}
+```{r create-ratio}
+#| label: creating-bill-ratio
 
+#create bill ratio variable
+penguins <- penguins |> 
+  mutate(bill_ratio = bill_length_mm / bill_depth_mm)
 ```
 
 
 Now create a boxplot of `bill_ratio` split by species.  Be sure to add labels to the axes.  You can add other modifications if you want as well (fill/color, theme, etc).
 
-```{r}
+```{r boxplot}
+#| label: bill-ratio-boxplot
 
+#boxplot to visualize bill_ratio by species
+ggplot(data = penguins) +
+  geom_boxplot(aes(x = bill_ratio,
+                   y = species,
+                   fill = species)) +
+  labs(x = "Ratio of Bill Length to Bill Depth",
+       y = "Penguin Species") +
+  guides(fill = "none") +
+  theme_bw() +
+  scale_fill_viridis_d()
 ```
 
 
 Add three new columns to penguins within one `mutate()` function: one column that contains the bill ratio (bill length / bill depth), one that contains the body mass converted to kg, and one that contains the flipper length converted to meters.
 
-```{r}
-penguins |>
-  mutate(bill_ratio = ___________,
-         body_mass_kg = ___________,
-         flipper_length_m = ______________)
+```{r new-columns}
+#| label: new-columns-conversions
+
+#create new columns for converted variables
+penguins <- penguins |>
+  mutate(bill_ratio = bill_length_mm / bill_depth_mm,
+         body_mass_kg = body_mass_g / 1000,
+         flipper_length_m = flipper_length_mm / 1000)
 ```
 
 
 We can also use `mutate()` to modify an existing variable.  By default, R reports factors in alphabetical order (you may notice in your boxplot they always print in the same order, Adelie, Chinstrap, Gentoo). If we want to reorder, we can use a function `fct_relevel()` from the `forcats` package, which we will learn about in a few weeks. Modify the code below to calculate the `bill_ratio` and then recreate the boxplot from above by species - how does it differ? 
 
-```{r}
+```{r reorder-species}
+#| label: reorder-species
+
+#reorder species and recreate boxplot
 penguins |> 
   mutate(species = 
            fct_relevel(species, "Adelie", "Gentoo", "Chinstrap"),
-         bill_ratio = ___________) |> 
-  ___________
+         bill_ratio = bill_length_mm / bill_depth_mm) |> 
+  ggplot() +
+  geom_boxplot(aes(x = bill_ratio,
+                   y = species,
+                   fill = species)) +
+  labs(x = "Ratio of Bill Length to Bill Depth",
+       y = "Penguin Species") +
+  guides(fill = "none") +
+  theme_bw() +
+  scale_fill_viridis_d()
   
 ```
 
@@ -141,11 +170,14 @@ Second Note, if you use `mosaic` in your statistics class, note that `mean()` us
 ### Group by Species and Sex
 Find the mean and standard deviation of body mass in *kilograms* by species and sex.
 
-```{r}
+```{r mean-sd-mass-kg}
+#| label: summary-stats-mass-kg
+#Calculate summary statistics for body mass (kg) by species and sex
 penguins |> 
-  _________(body_mass_kg = ____________) |> 
-  group_by(_______________) |> 
-  summarize(_______________)
+  mutate(body_mass_kg = body_mass_g / 1000) |> 
+  group_by(species, sex) |> 
+  summarize(mass_mean_kg = mean(body_mass_kg, na.rm = TRUE),
+            mass_sd_kg = sd(body_mass_kg, na.rm = TRUE))
 ```
 
 
